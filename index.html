@@ -1,182 +1,1679 @@
-<!doctype html>
+<!DOCTYPE html>
 <html lang="es">
- <head><script src="/_sdk/telemetry_sdk.js"></script>
+<head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Cuido Mi Salud</title>
-  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
-  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+  <title>Cuido Mi Salud 🌟</title>
+  <meta name="description" content="Juego educativo interactivo para niños sobre hábitos de salud en la escuela, casa y el parque.">
+  <link href="https://fonts.googleapis.com/css2?family=Nunito:wght@400;600;700;800;900&display=swap" rel="stylesheet">
   <style>
-    body { font-family: 'DM Sans', sans-serif; }
-    .shake { animation: shake 0.4s ease-in-out; }
-    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
-    .correct-glow { box-shadow: 0 0 0 6px #22c55e; transform: scale(1.05); }
-    .fade-in { animation: fadeIn 0.5s ease-out; }
-    @keyframes fadeIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
-    .bounce { animation: bounce 0.6s ease infinite alternate; }
-    @keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-10px)} }
+    :root {
+      --purple-deep: #4c1d95;
+      --purple-mid: #7c3aed;
+      --purple-light: #a78bfa;
+      --gold: #fbbf24;
+      --gold-dark: #d97706;
+      --green: #22c55e;
+      --red: #ef4444;
+      --blue: #3b82f6;
+      --pink: #ec4899;
+      --cyan: #06b6d4;
+      --white: #ffffff;
+      --glass: rgba(255,255,255,0.15);
+      --glass-border: rgba(255,255,255,0.3);
+    }
+
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+
+    body {
+      font-family: 'Nunito', sans-serif;
+      min-height: 100vh;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      padding: 16px;
+      background: linear-gradient(135deg, #1e1b4b 0%, #4c1d95 40%, #7c3aed 70%, #a855f7 100%);
+      background-size: 400% 400%;
+      animation: gradientShift 8s ease infinite;
+      overflow-x: hidden;
+    }
+
+    @keyframes gradientShift {
+      0%   { background-position: 0% 50%; }
+      50%  { background-position: 100% 50%; }
+      100% { background-position: 0% 50%; }
+    }
+
+    /* Floating particles */
+    .particles {
+      position: fixed;
+      top: 0; left: 0;
+      width: 100%; height: 100%;
+      pointer-events: none;
+      z-index: 0;
+      overflow: hidden;
+    }
+    .particle {
+      position: absolute;
+      border-radius: 50%;
+      opacity: 0.15;
+      animation: floatUp linear infinite;
+    }
+    @keyframes floatUp {
+      0%   { transform: translateY(100vh) scale(0); opacity: 0; }
+      10%  { opacity: 0.15; }
+      90%  { opacity: 0.15; }
+      100% { transform: translateY(-100px) scale(1); opacity: 0; }
+    }
+
+    section {
+      position: relative;
+      z-index: 1;
+      width: 100%;
+    }
+
+    /* GLASSMORPHISM CARD */
+    .glass-card {
+      background: rgba(255,255,255,0.12);
+      backdrop-filter: blur(20px);
+      -webkit-backdrop-filter: blur(20px);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 28px;
+      padding: 28px;
+      box-shadow: 0 25px 50px rgba(0,0,0,0.3), inset 0 1px 0 rgba(255,255,255,0.2);
+    }
+
+    .hidden { display: none !important; }
+
+    /* ANIMATIONS */
+    @keyframes fadeInUp {
+      from { opacity: 0; transform: translateY(30px) scale(0.95); }
+      to   { opacity: 1; transform: translateY(0) scale(1); }
+    }
+    @keyframes bounce {
+      0%, 100% { transform: translateY(0) rotate(0deg); }
+      50% { transform: translateY(-14px) rotate(5deg); }
+    }
+    @keyframes shake {
+      0%,100%{ transform: translateX(0) rotate(0deg); }
+      20%{ transform: translateX(-10px) rotate(-3deg); }
+      40%{ transform: translateX(10px) rotate(3deg); }
+      60%{ transform: translateX(-8px) rotate(-2deg); }
+      80%{ transform: translateX(8px) rotate(2deg); }
+    }
+    @keyframes correctPop {
+      0%  { transform: scale(1); }
+      40% { transform: scale(1.15); }
+      70% { transform: scale(0.95); }
+      100%{ transform: scale(1); }
+    }
+    @keyframes starPop {
+      0%  { transform: scale(0) rotate(-20deg); opacity: 0; }
+      60% { transform: scale(1.3) rotate(5deg); opacity: 1; }
+      100%{ transform: scale(1) rotate(0deg); opacity: 1; }
+    }
+    @keyframes pulse {
+      0%, 100% { transform: scale(1); }
+      50%       { transform: scale(1.05); }
+    }
+    @keyframes confettiFall {
+      0%   { transform: translateY(-20px) rotate(0deg); opacity: 1; }
+      100% { transform: translateY(100vh) rotate(720deg); opacity: 0; }
+    }
+    @keyframes slideIn {
+      from { transform: translateX(-30px); opacity: 0; }
+      to   { transform: translateX(0); opacity: 1; }
+    }
+    @keyframes rankUp {
+      0%  { transform: scale(0.8) translateY(10px); opacity: 0; }
+      100%{ transform: scale(1) translateY(0); opacity: 1; }
+    }
+
+    .fade-in-up  { animation: fadeInUp 0.5s ease-out both; }
+    .bounce-anim { animation: bounce 1.5s ease-in-out infinite; }
+    .pulse-anim  { animation: pulse 2s ease-in-out infinite; }
+
+    /* BUTTONS */
+    .btn-primary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 10px;
+      background: linear-gradient(135deg, var(--gold), #f59e0b);
+      color: var(--purple-deep);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 900;
+      font-size: 20px;
+      padding: 16px 36px;
+      border: none;
+      border-radius: 50px;
+      cursor: pointer;
+      box-shadow: 0 8px 25px rgba(251,191,36,0.5), inset 0 1px 0 rgba(255,255,255,0.3);
+      transition: transform 0.2s, box-shadow 0.2s;
+      letter-spacing: 0.5px;
+    }
+    .btn-primary:hover {
+      transform: translateY(-3px) scale(1.05);
+      box-shadow: 0 14px 35px rgba(251,191,36,0.6), inset 0 1px 0 rgba(255,255,255,0.3);
+    }
+    .btn-primary:active { transform: scale(0.97); }
+
+    .btn-secondary {
+      display: inline-flex;
+      align-items: center;
+      justify-content: center;
+      gap: 8px;
+      background: rgba(255,255,255,0.2);
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 16px;
+      padding: 12px 28px;
+      border: 2px solid rgba(255,255,255,0.4);
+      border-radius: 50px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      transition: all 0.2s;
+    }
+    .btn-secondary:hover {
+      background: rgba(255,255,255,0.3);
+      transform: translateY(-2px);
+    }
+
+    /* SPEECH BUTTON */
+    .speech-box {
+      display: flex;
+      align-items: center;
+      gap: 12px;
+      background: rgba(255,255,255,0.9);
+      border-radius: 16px;
+      padding: 14px 18px;
+      margin-bottom: 20px;
+      cursor: pointer;
+      transition: all 0.2s;
+      border: 2px solid transparent;
+    }
+    .speech-box:hover { border-color: var(--purple-light); transform: scale(1.01); }
+    .speech-icon {
+      width: 40px; height: 40px;
+      background: linear-gradient(135deg, var(--purple-mid), var(--purple-light));
+      border-radius: 50%;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 18px;
+      flex-shrink: 0;
+      box-shadow: 0 4px 12px rgba(124,58,237,0.4);
+      transition: transform 0.2s;
+    }
+    .speech-box:hover .speech-icon { transform: scale(1.1); }
+    .speech-text {
+      color: var(--purple-deep);
+      font-size: 14px;
+      font-weight: 700;
+      font-style: italic;
+      text-align: left;
+    }
+    .speaking .speech-icon {
+      animation: pulse 0.5s ease-in-out infinite;
+      background: linear-gradient(135deg, var(--green), #16a34a);
+    }
+
+    /* ─── SCREEN: WELCOME ─── */
+    #screen-welcome {
+      max-width: 440px;
+      margin: auto;
+      text-align: center;
+    }
+    .welcome-emoji {
+      font-size: 80px;
+      display: block;
+      margin-bottom: 8px;
+    }
+    .welcome-title {
+      font-size: 42px;
+      font-weight: 900;
+      color: white;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+      margin-bottom: 6px;
+      line-height: 1.1;
+    }
+    .welcome-sub {
+      font-size: 18px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+      margin-bottom: 24px;
+    }
+
+    /* SCORE BADGE */
+    .best-score-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: rgba(251,191,36,0.2);
+      border: 2px solid rgba(251,191,36,0.5);
+      border-radius: 50px;
+      padding: 8px 18px;
+      color: var(--gold);
+      font-weight: 800;
+      font-size: 15px;
+      margin-bottom: 20px;
+    }
+
+    /* ─── SCREEN: LEVELS ─── */
+    #screen-levels {
+      max-width: 520px;
+      margin: auto;
+      text-align: center;
+    }
+    .levels-title {
+      font-size: 30px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 20px;
+    }
+    .levels-grid {
+      display: grid;
+      grid-template-columns: repeat(3, 1fr);
+      gap: 14px;
+      margin-bottom: 20px;
+    }
+    @media (max-width: 480px) {
+      .levels-grid { grid-template-columns: 1fr; }
+    }
+    .level-card {
+      border: none;
+      border-radius: 22px;
+      overflow: hidden;
+      cursor: pointer;
+      transition: transform 0.25s, box-shadow 0.25s;
+      box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+      background: white;
+      position: relative;
+    }
+    .level-card:hover {
+      transform: translateY(-6px) scale(1.03);
+      box-shadow: 0 18px 40px rgba(0,0,0,0.4);
+    }
+    .level-card img {
+      width: 100%;
+      height: 110px;
+      object-fit: cover;
+      display: block;
+    }
+    .level-label {
+      padding: 12px 8px;
+      font-weight: 900;
+      font-size: 16px;
+      color: var(--purple-deep);
+      font-family: 'Nunito', sans-serif;
+    }
+    .level-stars {
+      position: absolute;
+      top: 8px; right: 8px;
+      background: rgba(0,0,0,0.55);
+      border-radius: 12px;
+      padding: 3px 8px;
+      font-size: 13px;
+      backdrop-filter: blur(6px);
+    }
+    .level-locked {
+      opacity: 0.55;
+      pointer-events: none;
+    }
+    .lock-badge {
+      position: absolute;
+      inset: 0;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      font-size: 40px;
+      background: rgba(0,0,0,0.35);
+    }
+
+    /* ─── SCREEN: CHALLENGE ─── */
+    #screen-challenge {
+      max-width: 560px;
+      margin: auto;
+    }
+    .challenge-header {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      margin-bottom: 16px;
+    }
+    .challenge-level-badge {
+      background: rgba(255,255,255,0.2);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50px;
+      padding: 6px 16px;
+      color: white;
+      font-weight: 800;
+      font-size: 15px;
+      backdrop-filter: blur(10px);
+    }
+    .question-counter {
+      color: rgba(255,255,255,0.8);
+      font-weight: 700;
+      font-size: 15px;
+    }
+
+    /* PROGRESS BAR */
+    .progress-wrap {
+      background: rgba(255,255,255,0.2);
+      border-radius: 50px;
+      height: 10px;
+      margin-bottom: 16px;
+      overflow: hidden;
+    }
+    .progress-fill {
+      height: 100%;
+      background: linear-gradient(90deg, var(--gold), #f59e0b);
+      border-radius: 50px;
+      transition: width 0.4s ease;
+      box-shadow: 0 0 10px rgba(251,191,36,0.6);
+    }
+
+    /* SCORE HUD */
+    .score-hud {
+      display: flex;
+      justify-content: center;
+      gap: 6px;
+      margin-bottom: 14px;
+      flex-wrap: wrap;
+    }
+    .star-chip {
+      font-size: 22px;
+      transition: transform 0.3s;
+    }
+    .star-chip.earned { animation: starPop 0.4s ease-out both; }
+
+    /* QUESTION */
+    .question-text {
+      text-align: center;
+      font-size: 20px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 16px;
+      text-shadow: 0 2px 10px rgba(0,0,0,0.3);
+      line-height: 1.3;
+    }
+
+    /* CARDS GRID */
+    .cards-grid {
+      display: grid;
+      grid-template-columns: repeat(2, 1fr);
+      gap: 12px;
+      margin-bottom: 12px;
+    }
+    .card-btn {
+      background: white;
+      border: 3px solid transparent;
+      border-radius: 20px;
+      padding: 18px 12px;
+      cursor: pointer;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+      gap: 10px;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      box-shadow: 0 6px 20px rgba(0,0,0,0.2);
+      font-family: 'Nunito', sans-serif;
+    }
+    .card-btn:hover:not(:disabled) {
+      transform: translateY(-4px) scale(1.03);
+      box-shadow: 0 12px 30px rgba(0,0,0,0.25);
+      border-color: var(--purple-light);
+    }
+    .card-btn:disabled { cursor: not-allowed; }
+    .card-emoji { font-size: 42px; line-height: 1; }
+    .card-label {
+      font-size: 13px;
+      font-weight: 800;
+      color: #374151;
+      text-align: center;
+      line-height: 1.3;
+    }
+    .card-correct {
+      border-color: var(--green) !important;
+      background: #f0fdf4 !important;
+      animation: correctPop 0.5s ease-out;
+    }
+    .card-wrong {
+      border-color: var(--red) !important;
+      background: #fef2f2 !important;
+      animation: shake 0.5s ease-in-out;
+    }
+
+    /* FEEDBACK BADGE */
+    .feedback-badge {
+      text-align: center;
+      font-size: 18px;
+      font-weight: 900;
+      padding: 10px 20px;
+      border-radius: 50px;
+      margin-bottom: 10px;
+      animation: fadeInUp 0.3s ease-out;
+    }
+    .feedback-correct { background: rgba(34,197,94,0.25); color: #4ade80; border: 2px solid rgba(34,197,94,0.4); }
+    .feedback-wrong   { background: rgba(239,68,68,0.25);  color: #f87171; border: 2px solid rgba(239,68,68,0.4); }
+
+    /* ─── SCREEN: SUCCESS ─── */
+    #screen-success {
+      max-width: 480px;
+      margin: auto;
+      text-align: center;
+    }
+    .success-emoji { font-size: 72px; display: block; margin-bottom: 8px; }
+    .success-title {
+      font-size: 36px;
+      font-weight: 900;
+      color: white;
+      margin-bottom: 6px;
+      text-shadow: 0 4px 20px rgba(0,0,0,0.3);
+    }
+    .success-sub {
+      font-size: 17px;
+      color: rgba(255,255,255,0.85);
+      font-weight: 600;
+      margin-bottom: 20px;
+    }
+    .stars-display {
+      display: flex;
+      justify-content: center;
+      gap: 10px;
+      margin-bottom: 20px;
+    }
+    .star-big {
+      font-size: 52px;
+      opacity: 0.2;
+      transition: all 0.4s;
+    }
+    .star-big.lit {
+      opacity: 1;
+      filter: drop-shadow(0 0 12px rgba(251,191,36,0.8));
+      animation: starPop 0.5s ease-out both;
+    }
+    .score-detail {
+      background: rgba(255,255,255,0.12);
+      border: 1px solid rgba(255,255,255,0.25);
+      border-radius: 16px;
+      padding: 14px 20px;
+      margin-bottom: 20px;
+      color: white;
+      font-weight: 700;
+      font-size: 16px;
+    }
+    .score-row {
+      display: flex;
+      justify-content: space-between;
+      padding: 6px 0;
+      border-bottom: 1px solid rgba(255,255,255,0.1);
+    }
+    .score-row:last-child { border-bottom: none; }
+    .score-val { color: var(--gold); font-weight: 900; }
+
+    /* NEW RECORD */
+    .new-record-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background: linear-gradient(135deg, var(--gold), #f59e0b);
+      color: var(--purple-deep);
+      font-weight: 900;
+      font-size: 18px;
+      padding: 10px 24px;
+      border-radius: 50px;
+      margin-bottom: 16px;
+      box-shadow: 0 8px 25px rgba(251,191,36,0.5);
+      animation: pulse 1s ease infinite;
+    }
+
+    .success-btns {
+      display: flex;
+      gap: 12px;
+      justify-content: center;
+      flex-wrap: wrap;
+    }
+
+    /* ─── SCREEN: RANKING ─── */
+    #screen-ranking {
+      max-width: 500px;
+      margin: auto;
+    }
+    .ranking-title {
+      font-size: 28px;
+      font-weight: 900;
+      color: white;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+    .rank-tabs {
+      display: flex;
+      gap: 8px;
+      margin-bottom: 16px;
+      background: rgba(255,255,255,0.1);
+      border-radius: 50px;
+      padding: 4px;
+    }
+    .rank-tab {
+      flex: 1;
+      padding: 8px;
+      border: none;
+      background: transparent;
+      color: rgba(255,255,255,0.6);
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      border-radius: 50px;
+      cursor: pointer;
+      transition: all 0.2s;
+    }
+    .rank-tab.active {
+      background: white;
+      color: var(--purple-deep);
+    }
+    .rank-list { list-style: none; }
+    .rank-item {
+      display: flex;
+      align-items: center;
+      gap: 14px;
+      background: rgba(255,255,255,0.1);
+      border: 1px solid rgba(255,255,255,0.15);
+      border-radius: 16px;
+      padding: 12px 16px;
+      margin-bottom: 8px;
+      animation: rankUp 0.3s ease-out both;
+    }
+    .rank-pos {
+      font-size: 22px;
+      font-weight: 900;
+      color: rgba(255,255,255,0.4);
+      min-width: 36px;
+    }
+    .rank-pos.gold   { color: #fbbf24; }
+    .rank-pos.silver { color: #e5e7eb; }
+    .rank-pos.bronze { color: #d97706; }
+    .rank-info { flex: 1; }
+    .rank-name { color: white; font-weight: 800; font-size: 16px; }
+    .rank-date { color: rgba(255,255,255,0.5); font-size: 12px; font-weight: 600; }
+    .rank-score {
+      color: var(--gold);
+      font-weight: 900;
+      font-size: 20px;
+      display: flex;
+      flex-direction: column;
+      align-items: flex-end;
+      gap: 2px;
+    }
+    .rank-stars { font-size: 14px; }
+    .rank-empty {
+      text-align: center;
+      color: rgba(255,255,255,0.5);
+      padding: 30px;
+      font-size: 16px;
+      font-weight: 600;
+    }
+
+    /* NAME MODAL */
+    .modal-overlay {
+      position: fixed;
+      inset: 0;
+      background: rgba(0,0,0,0.6);
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      z-index: 100;
+      backdrop-filter: blur(6px);
+      animation: fadeInUp 0.3s ease-out;
+    }
+    .modal-box {
+      background: linear-gradient(135deg, #4c1d95, #7c3aed);
+      border: 2px solid rgba(255,255,255,0.3);
+      border-radius: 28px;
+      padding: 32px;
+      max-width: 360px;
+      width: 90%;
+      text-align: center;
+      box-shadow: 0 30px 60px rgba(0,0,0,0.4);
+    }
+    .modal-title { font-size: 24px; font-weight: 900; color: white; margin-bottom: 8px; }
+    .modal-sub { color: rgba(255,255,255,0.7); font-size: 15px; font-weight: 600; margin-bottom: 20px; }
+    .name-input {
+      width: 100%;
+      padding: 14px 18px;
+      border-radius: 16px;
+      border: 3px solid rgba(255,255,255,0.3);
+      background: rgba(255,255,255,0.15);
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-size: 18px;
+      font-weight: 700;
+      text-align: center;
+      outline: none;
+      margin-bottom: 16px;
+      transition: border-color 0.2s;
+    }
+    .name-input::placeholder { color: rgba(255,255,255,0.4); }
+    .name-input:focus { border-color: var(--gold); }
+
+    /* CONFETTI */
+    .confetti-piece {
+      position: fixed;
+      width: 10px; height: 14px;
+      top: -20px;
+      border-radius: 3px;
+      animation: confettiFall 3s ease-in forwards;
+      z-index: 200;
+      pointer-events: none;
+    }
+
+    /* TTS INDICATOR */
+    .tts-badge {
+      display: inline-flex;
+      align-items: center;
+      gap: 6px;
+      background: rgba(255,255,255,0.15);
+      border-radius: 50px;
+      padding: 5px 14px;
+      color: white;
+      font-size: 12px;
+      font-weight: 700;
+      margin-bottom: 16px;
+    }
+    .tts-dot {
+      width: 8px; height: 8px;
+      border-radius: 50%;
+      background: var(--green);
+      animation: pulse 1s ease infinite;
+    }
+    .tts-dot.off { background: var(--red); animation: none; }
+
+    /* BACK BTN */
+    .back-btn {
+      position: fixed;
+      top: 16px; left: 16px;
+      background: rgba(255,255,255,0.15);
+      border: 1px solid rgba(255,255,255,0.3);
+      border-radius: 50px;
+      padding: 8px 16px;
+      color: white;
+      font-family: 'Nunito', sans-serif;
+      font-weight: 800;
+      font-size: 14px;
+      cursor: pointer;
+      backdrop-filter: blur(10px);
+      z-index: 50;
+      transition: all 0.2s;
+      display: none;
+    }
+    .back-btn:hover { background: rgba(255,255,255,0.25); transform: translateY(-2px); }
+    .back-btn.visible { display: flex; align-items: center; gap: 6px; }
   </style>
-  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
-  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
-  <script src="/_sdk/resizing_sdk.js" type="text/javascript"></script>
- </head>
- <body data-template-id="__page-root" class="min-h-screen flex items-center justify-center p-4"><!-- WELCOME -->
-  <section id="screen-welcome" class="text-center max-w-md w-full fade-in">
-   <div class="mb-6">
-    <span class="text-6xl bounce inline-block">🌟</span>
-   </div>
-   <h1 data-template-id="game-title" class="canva-text text-4xl mb-3"></h1>
-   <p data-template-id="game-subtitle" class="canva-text text-lg mb-8"></p>
-   <div data-template-id="audio-welcome" class="canva-text bg-white/80 rounded-xl p-4 mb-6 text-sm italic"></div><button data-template-id="btn-play" class="canva-button text-2xl px-10 py-4 rounded-full shadow-lg hover:scale-105 transition-transform" onclick="playClick();showLevelSelect()"></button>
-  </section><!-- LEVEL SELECT -->
-  <section id="screen-levels" class="text-center max-w-lg w-full hidden">
-   <h2 data-template-id="levels-title" class="canva-text text-2xl mb-6"></h2>
-   <div data-template-id="audio-levels" class="canva-text bg-white/80 rounded-xl p-3 mb-6 text-sm italic"></div>
-   <div class="grid grid-cols-2 gap-4"><button onclick="playClick();startLevel('school')" class="rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition-transform"> <img data-template-id="img-school" class="canva-image w-full h-32 object-cover" loading="lazy"> <span data-template-id="label-school" class="canva-text block py-3 font-bold text-lg"></span> </button> <button onclick="playClick();startLevel('home')" class="rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition-transform"> <img data-template-id="img-home" class="canva-image w-full h-32 object-cover" loading="lazy"> <span data-template-id="label-home" class="canva-text block py-3 font-bold text-lg"></span> </button>
-   </div>
-  </section><!-- CHALLENGE -->
-  <section id="screen-challenge" class="text-center max-w-lg w-full hidden">
-   <h2 data-template-id="challenge-title" class="canva-text text-xl mb-2"></h2>
-   <div data-template-id="audio-challenge" class="canva-text bg-white/80 rounded-xl p-3 mb-4 text-sm italic"></div>
-   <p id="question-text" class="text-white font-bold text-lg mb-3"></p>
-   <div id="cards-grid" class="grid grid-cols-2 gap-4"></div>
-   <p id="progress-text" class="mt-4 text-white/80 font-medium"></p>
-  </section><!-- SUCCESS -->
-  <section id="screen-success" class="text-center max-w-md w-full hidden">
-   <div class="fade-in"><span class="text-6xl bounce inline-block mb-4">🎉</span> <img data-template-id="img-success" class="canva-image w-full h-48 object-cover rounded-2xl mb-4" loading="lazy">
-    <h2 data-template-id="success-title" class="canva-text text-3xl mb-2"></h2>
-    <p data-template-id="success-message" class="canva-text text-lg mb-6"></p>
-    <div data-template-id="audio-success" class="canva-text bg-white/80 rounded-xl p-3 mb-6 text-sm italic"></div><button data-template-id="btn-replay" class="canva-button text-xl px-8 py-3 rounded-full shadow-lg hover:scale-105 transition-transform" onclick="playClick();resetGame()"></button>
-   </div>
-  </section>
-  <script src="/_sdk/editing_sdk.js"></script>
-  <script>
-    // Web Audio API sounds
-    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+</head>
+<body>
 
-    function playTone(freq, duration, type, vol) {
-      const o = audioCtx.createOscillator();
-      const g = audioCtx.createGain();
-      o.type = type;
-      o.frequency.setValueAtTime(freq, audioCtx.currentTime);
-      g.gain.setValueAtTime(vol, audioCtx.currentTime);
-      g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
-      o.connect(g); g.connect(audioCtx.destination);
-      o.start(); o.stop(audioCtx.currentTime + duration);
-    }
+<!-- Particles -->
+<div class="particles" id="particles"></div>
 
-    function playCorrect() {
-      playTone(523, 0.15, 'sine', 0.4);
-      setTimeout(() => playTone(659, 0.15, 'sine', 0.4), 100);
-      setTimeout(() => playTone(784, 0.25, 'sine', 0.4), 200);
-    }
+<!-- Back Button -->
+<button class="back-btn" id="back-btn" onclick="goBack()">⬅ Volver</button>
 
-    function playWrong() {
-      playTone(200, 0.3, 'square', 0.2);
-      setTimeout(() => playTone(150, 0.3, 'square', 0.2), 150);
-    }
+<!-- ══════════════ WELCOME ══════════════ -->
+<section id="screen-welcome" class="fade-in-up">
+  <div class="glass-card" style="max-width:420px; margin:auto; text-align:center;">
+    <span class="welcome-emoji bounce-anim">🌟</span>
+    <h1 class="welcome-title">¡Cuido Mi Salud!</h1>
+    <p class="welcome-sub">Aprende a cuidarte jugando</p>
 
-    function playClick() {
-      if (audioCtx.state === 'suspended') audioCtx.resume();
-      playTone(880, 0.08, 'sine', 0.2);
-    }
+    <div id="tts-badge" class="tts-badge">
+      <span class="tts-dot" id="tts-dot"></span>
+      <span id="tts-label">Voz activada</span>
+    </div>
 
-    // Game data - 6 questions per level
-    const questions = {
-      school: [
-        { correct: ['🧼', 'Lavarme las manos'], wrong: [['🏃', 'Correr en el pasillo'], ['😴', 'Dormirme en clase'], ['🍭', 'Comer dulces']] },
-        { correct: ['💧', 'Tomar agua'], wrong: [['🥤', 'Tomar refresco'], ['🚫', 'No desayunar'], ['📱', 'Usar celular']] },
-        { correct: ['🥗', 'Comer mi lunch sano'], wrong: [['🍟', 'Comer chatarra'], ['🏃', 'Empujar amigos'], ['😤', 'Gritar']] },
-        { correct: ['🤧', 'Taparme al estornudar'], wrong: [['👃', 'Tocarme la cara'], ['🚰', 'Desperdiciar agua'], ['📺', 'Ver tele todo el día']] },
-        { correct: ['🏃‍♂️', 'Hacer ejercicio en recreo'], wrong: [['🍩', 'Comer donas'], ['😠', 'Pelear'], ['🚫', 'No lavarme']] },
-        { correct: ['😊', 'Compartir con amigos'], wrong: [['😤', 'Enojarme mucho'], ['🍬', 'Comer muchos dulces'], ['📺', 'No salir a jugar']] }
-      ],
-      home: [
-        { correct: ['🪥', 'Cepillar mis dientes'], wrong: [['📺', 'Desvelarme'], ['🍭', 'Comer dulces'], ['😤', 'No bañarme']] },
-        { correct: ['🍎', 'Comer frutas'], wrong: [['🍟', 'Comer chatarra'], ['📱', 'Usar tablet todo el día'], ['😴', 'No dormir']] },
-        { correct: ['🛁', 'Bañarme diario'], wrong: [['🚫', 'No lavarme las manos'], ['🍩', 'Cenar dulces'], ['😠', 'Gritar']] },
-        { correct: ['😴', 'Dormir temprano'], wrong: [['📺', 'Ver tele toda la noche'], ['🍭', 'Comer antes de dormir'], ['📱', 'Jugar videojuegos']] },
-        { correct: ['🥦', 'Comer verduras'], wrong: [['🍕', 'Solo comer pizza'], ['🚫', 'No desayunar'], ['😤', 'Enojarme']] },
-        { correct: ['🧴', 'Lavarme las manos antes de comer'], wrong: [['🍬', 'Comer con manos sucias'], ['📺', 'Comer viendo tele'], ['🚰', 'No tomar agua']] }
+    <div class="speech-box" onclick="speak('¡Hola amiguito! Vamos a aprender cómo cuidar nuestra salud. ¡Toca Jugar para comenzar!')">
+      <div class="speech-icon">🔊</div>
+      <p class="speech-text">¡Hola amiguito! Vamos a aprender cómo cuidar nuestra salud. ¡Toca Jugar para comenzar!</p>
+    </div>
+
+    <div id="global-best" class="best-score-badge" style="display:none;">
+      🏆 Mejor puntaje: <span id="best-score-val">0</span> pts
+    </div>
+
+    <div style="display:flex; gap:12px; justify-content:center; flex-wrap:wrap;">
+      <button class="btn-primary" id="btn-play" onclick="playClick();showLevelSelect()">▶ ¡Jugar!</button>
+      <button class="btn-secondary" onclick="playClick();showRanking()">🏆 Ranking</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ LEVEL SELECT ══════════════ -->
+<section id="screen-levels" class="fade-in-up hidden">
+  <div class="glass-card" style="max-width:560px; margin:auto;">
+    <h2 class="levels-title">🗺️ ¿Dónde quieres cuidarte?</h2>
+
+    <div class="speech-box" onclick="speak('Elige un lugar. ¿Quieres cuidarte en la escuela, en tu casa, o en el parque?')">
+      <div class="speech-icon">🔊</div>
+      <p class="speech-text">Elige un lugar para cuidarte. ¡Toca uno!</p>
+    </div>
+
+    <div class="levels-grid">
+      <!-- SCHOOL -->
+      <button class="level-card" id="card-school" onclick="playClick();startLevel('school')">
+        <span class="level-stars" id="stars-school">⭐⭐⭐</span>
+        <img src="https://images.pexels.com/photos/8535620/pexels-photo-8535620.jpeg?auto=compress&cs=tinysrgb&w=600"
+             alt="Salón de clases preescolar" loading="lazy">
+        <div class="level-label">🏫 La Escuela</div>
+      </button>
+      <!-- HOME -->
+      <button class="level-card" id="card-home" onclick="playClick();startLevel('home')">
+        <span class="level-stars" id="stars-home">⭐⭐⭐</span>
+        <img src="https://images.pexels.com/photos/9305101/pexels-photo-9305101.jpeg?auto=compress&cs=tinysrgb&w=600"
+             alt="Cocina del hogar" loading="lazy">
+        <div class="level-label">🏠 Mi Casa</div>
+      </button>
+      <!-- PARK -->
+      <button class="level-card" id="card-park" onclick="playClick();startLevel('park')">
+        <span class="level-stars" id="stars-park">⭐⭐⭐</span>
+        <img src="https://images.pexels.com/photos/1046838/pexels-photo-1046838.jpeg?auto=compress&cs=tinysrgb&w=600"
+             alt="Niños jugando en parque" loading="lazy">
+        <div class="level-label">🌳 El Parque</div>
+      </button>
+    </div>
+
+    <div style="text-align:center;">
+      <button class="btn-secondary" onclick="playClick();showRanking()">🏆 Ver Ranking</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ CHALLENGE ══════════════ -->
+<section id="screen-challenge" class="hidden">
+  <div class="glass-card" style="max-width:560px; margin:auto;">
+    <div class="challenge-header">
+      <span class="challenge-level-badge" id="challenge-level-label">🏫 Escuela</span>
+      <span class="question-counter" id="question-counter">1 / 8</span>
+    </div>
+
+    <div class="progress-wrap">
+      <div class="progress-fill" id="progress-fill" style="width:0%"></div>
+    </div>
+
+    <div class="score-hud" id="score-hud"></div>
+
+    <div class="speech-box" id="speech-question-box" onclick="speakQuestion()">
+      <div class="speech-icon">🔊</div>
+      <p class="speech-text" id="question-speech-text">Escucha la pregunta...</p>
+    </div>
+
+    <p class="question-text" id="question-text">¿Qué acción te ayuda a estar sano?</p>
+
+    <div id="feedback-badge" class="hidden"></div>
+
+    <div class="cards-grid" id="cards-grid"></div>
+  </div>
+</section>
+
+<!-- ══════════════ SUCCESS ══════════════ -->
+<section id="screen-success" class="fade-in-up hidden">
+  <div class="glass-card" style="max-width:460px; margin:auto; text-align:center;">
+    <span class="success-emoji bounce-anim">🎉</span>
+    <h2 class="success-title" id="success-title">¡Muy bien!</h2>
+    <p class="success-sub" id="success-sub">¡Eres un campeón de la salud!</p>
+
+    <div class="stars-display" id="stars-display">
+      <span class="star-big" id="star1">⭐</span>
+      <span class="star-big" id="star2">⭐</span>
+      <span class="star-big" id="star3">⭐</span>
+    </div>
+
+    <div id="new-record-badge" class="new-record-badge hidden">🏆 ¡Nuevo Récord!</div>
+
+    <div class="score-detail">
+      <div class="score-row">
+        <span>✅ Correctas</span>
+        <span class="score-val" id="res-correct">0 / 8</span>
+      </div>
+      <div class="score-row">
+        <span>⚡ Precisión</span>
+        <span class="score-val" id="res-accuracy">0%</span>
+      </div>
+      <div class="score-row">
+        <span>⭐ Puntos</span>
+        <span class="score-val" id="res-points">0</span>
+      </div>
+      <div class="score-row">
+        <span>🏆 Tu mejor</span>
+        <span class="score-val" id="res-best">0</span>
+      </div>
+    </div>
+
+    <div class="speech-box" onclick="speak(successSpeechText)">
+      <div class="speech-icon">🔊</div>
+      <p class="speech-text" id="success-speech-text">¡Felicidades! Ya sabes cómo cuidarte.</p>
+    </div>
+
+    <div class="success-btns">
+      <button class="btn-primary" onclick="playClick();askNameAndSave()">💾 Guardar puntaje</button>
+      <button class="btn-secondary" onclick="playClick();repeatLevel()">🔄 Reintentar</button>
+      <button class="btn-secondary" onclick="playClick();showLevelSelect()">🗺️ Niveles</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ RANKING ══════════════ -->
+<section id="screen-ranking" class="fade-in-up hidden">
+  <div class="glass-card" style="max-width:500px; margin:auto;">
+    <h2 class="ranking-title">🏆 Ranking de Campeones</h2>
+
+    <div class="rank-tabs" role="tablist">
+      <button class="rank-tab active" id="tab-school" onclick="switchRankTab('school')" role="tab">🏫 Escuela</button>
+      <button class="rank-tab" id="tab-home" onclick="switchRankTab('home')" role="tab">🏠 Casa</button>
+      <button class="rank-tab" id="tab-park" onclick="switchRankTab('park')" role="tab">🌳 Parque</button>
+    </div>
+
+    <ul class="rank-list" id="rank-list"></ul>
+
+    <div style="text-align:center; margin-top:12px;">
+      <button class="btn-secondary" onclick="playClick();showLevelSelect()">← Volver a niveles</button>
+    </div>
+  </div>
+</section>
+
+<!-- ══════════════ NAME MODAL ══════════════ -->
+<div class="modal-overlay hidden" id="name-modal">
+  <div class="modal-box">
+    <div style="font-size:48px; margin-bottom:8px;">🌟</div>
+    <h3 class="modal-title">¿Cuál es tu nombre?</h3>
+    <p class="modal-sub">Para guardar tu puntaje en el ranking</p>
+    <input type="text" class="name-input" id="player-name-input"
+           placeholder="Tu nombre aquí" maxlength="20"
+           onkeydown="if(event.key==='Enter')confirmSave()">
+    <div style="display:flex; gap:10px;">
+      <button class="btn-primary" style="flex:1;" onclick="confirmSave()">✅ Guardar</button>
+      <button class="btn-secondary" style="flex:1;" onclick="closeModal()">Saltar</button>
+    </div>
+  </div>
+</div>
+
+<script>
+// ══════════════════════════════════════════
+// PARTICLES
+// ══════════════════════════════════════════
+(function createParticles() {
+  const container = document.getElementById('particles');
+  const colors = ['#a78bfa','#818cf8','#c4b5fd','#fbbf24','#34d399'];
+  for (let i = 0; i < 18; i++) {
+    const p = document.createElement('div');
+    p.className = 'particle';
+    const size = Math.random() * 60 + 20;
+    p.style.cssText = `
+      width:${size}px; height:${size}px;
+      left:${Math.random()*100}%;
+      background:${colors[Math.floor(Math.random()*colors.length)]};
+      animation-duration:${Math.random()*12+8}s;
+      animation-delay:${Math.random()*8}s;
+    `;
+    container.appendChild(p);
+  }
+})();
+
+// ══════════════════════════════════════════
+// WEB AUDIO API
+// ══════════════════════════════════════════
+let audioCtx = null;
+function getAudioCtx() {
+  if (!audioCtx) audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+  return audioCtx;
+}
+function resumeAudio() {
+  const ctx = getAudioCtx();
+  if (ctx.state === 'suspended') ctx.resume();
+}
+function playTone(freq, dur, type = 'sine', vol = 0.3, delay = 0) {
+  const ctx = getAudioCtx();
+  const o = ctx.createOscillator();
+  const g = ctx.createGain();
+  o.type = type; o.frequency.setValueAtTime(freq, ctx.currentTime + delay);
+  g.gain.setValueAtTime(vol, ctx.currentTime + delay);
+  g.gain.exponentialRampToValueAtTime(0.001, ctx.currentTime + delay + dur);
+  o.connect(g); g.connect(ctx.destination);
+  o.start(ctx.currentTime + delay); o.stop(ctx.currentTime + delay + dur);
+}
+function playCorrect() {
+  resumeAudio();
+  playTone(523, 0.12, 'sine', 0.35, 0);
+  playTone(659, 0.12, 'sine', 0.35, 0.1);
+  playTone(784, 0.20, 'sine', 0.35, 0.2);
+  playTone(1047,0.25, 'sine', 0.3, 0.35);
+}
+function playWrong() {
+  resumeAudio();
+  playTone(220, 0.2, 'sawtooth', 0.2, 0);
+  playTone(180, 0.3, 'sawtooth', 0.15, 0.15);
+}
+function playClick() {
+  resumeAudio();
+  playTone(880, 0.07, 'sine', 0.2);
+}
+function playVictory() {
+  resumeAudio();
+  const melody = [523,587,659,698,784,880,988,1047];
+  melody.forEach((f,i) => playTone(f, 0.18, 'sine', 0.3, i*0.1));
+}
+
+// ══════════════════════════════════════════
+// TEXT TO SPEECH
+// ══════════════════════════════════════════
+let ttsEnabled = 'speechSynthesis' in window;
+let currentUtterance = null;
+let currentQuestion = null;
+
+function speak(text) {
+  if (!ttsEnabled) return;
+  window.speechSynthesis.cancel();
+  const u = new SpeechSynthesisUtterance(text);
+  u.lang = 'es-MX';
+  u.rate = 0.88;
+  u.pitch = 1.15;
+  u.volume = 1;
+  // Prefer a Spanish voice
+  const voices = window.speechSynthesis.getVoices();
+  const esVoice = voices.find(v => v.lang.startsWith('es') && v.localService) ||
+                  voices.find(v => v.lang.startsWith('es'));
+  if (esVoice) u.voice = esVoice;
+  currentUtterance = u;
+  const box = document.querySelector('.speech-box.speaking');
+  if (box) box.classList.remove('speaking');
+  u.onend = () => { document.querySelectorAll('.speech-box').forEach(b => b.classList.remove('speaking')); };
+  window.speechSynthesis.speak(u);
+}
+
+function speakQuestion() {
+  if (currentQuestion) speak(currentQuestion.speech || currentQuestion.question);
+}
+
+// Init TTS badge
+document.addEventListener('DOMContentLoaded', () => {
+  updateTTSBadge();
+  window.speechSynthesis.onvoiceschanged = () => {};
+  showBestScore();
+});
+
+function updateTTSBadge() {
+  const dot = document.getElementById('tts-dot');
+  const label = document.getElementById('tts-label');
+  if (ttsEnabled) {
+    dot.className = 'tts-dot';
+    label.textContent = 'Voz activada';
+  } else {
+    dot.className = 'tts-dot off';
+    label.textContent = 'Voz no disponible';
+  }
+}
+
+// ══════════════════════════════════════════
+// GAME DATA — 8 questions × 3 levels
+// ══════════════════════════════════════════
+const QUESTIONS = {
+  school: [
+    {
+      question: '¿Qué haces después de ir al baño en la escuela?',
+      speech: '¿Qué haces después de ir al baño en la escuela? ¡Busca la respuesta correcta!',
+      correct: { emoji: '🧼', label: 'Lavarme las manos' },
+      wrong: [
+        { emoji: '🏃', label: 'Correr al salón' },
+        { emoji: '🍭', label: 'Comer dulces' },
+        { emoji: '📱', label: 'Usar el celular' }
       ]
-    };
+    },
+    {
+      question: '¿Qué debes tomar cuando tienes sed?',
+      speech: '¿Qué debes tomar cuando tienes sed? ¡Escoge la opción saludable!',
+      correct: { emoji: '💧', label: 'Tomar agua' },
+      wrong: [
+        { emoji: '🥤', label: 'Tomar refresco' },
+        { emoji: '🍹', label: 'Jugo con azúcar' },
+        { emoji: '🍵', label: 'Café caliente' }
+      ]
+    },
+    {
+      question: '¿Qué comes en tu hora del lunch?',
+      speech: '¿Qué comes en tu hora del lunch? ¡Elige el alimento más sano!',
+      correct: { emoji: '🥗', label: 'Mi lunch sano' },
+      wrong: [
+        { emoji: '🍟', label: 'Papas fritas' },
+        { emoji: '🍩', label: 'Dona con azúcar' },
+        { emoji: '🍬', label: 'Muchos dulces' }
+      ]
+    },
+    {
+      question: '¿Qué haces cuando vas a estornudar?',
+      speech: '¿Qué haces cuando vas a estornudar? ¡Piénsalo bien!',
+      correct: { emoji: '🤧', label: 'Taparme la boca' },
+      wrong: [
+        { emoji: '👃', label: 'Tocarme la cara' },
+        { emoji: '😤', label: 'Estornudar libre' },
+        { emoji: '🚰', label: 'Desperdiciar agua' }
+      ]
+    },
+    {
+      question: '¿Qué haces en el recreo para estar sano?',
+      speech: '¿Qué haces en el recreo para estar sano? ¡Elige la mejor actividad!',
+      correct: { emoji: '🏃', label: 'Hacer ejercicio' },
+      wrong: [
+        { emoji: '📱', label: 'Ver el celular' },
+        { emoji: '😠', label: 'Pelear con amigos' },
+        { emoji: '📺', label: 'Ver videos todo el día' }
+      ]
+    },
+    {
+      question: '¿Cómo te llevas con tus compañeros?',
+      speech: '¿Cómo te llevas con tus compañeros de clase? ¡Escoge la respuesta sana!',
+      correct: { emoji: '😊', label: 'Compartir y jugar' },
+      wrong: [
+        { emoji: '😤', label: 'Enojarme mucho' },
+        { emoji: '😢', label: 'Aislarme solo' },
+        { emoji: '😠', label: 'Pelear siempre' }
+      ]
+    },
+    {
+      question: '¿Qué haces cuando tienes dolor de cabeza?',
+      speech: '¿Qué haces cuando tienes dolor de cabeza en la escuela? ¡Busca la acción correcta!',
+      correct: { emoji: '👩‍⚕️', label: 'Avisar al maestro' },
+      wrong: [
+        { emoji: '🏃', label: 'Correr en los pasillos' },
+        { emoji: '🍭', label: 'Comer muchos dulces' },
+        { emoji: '📱', label: 'Jugar sin parar' }
+      ]
+    },
+    {
+      question: '¿Cómo cuidas tus ojos en la escuela?',
+      speech: '¿Cómo cuidas tus ojos en la escuela? ¡Elige la opción correcta!',
+      correct: { emoji: '📏', label: 'Leer a buena distancia' },
+      wrong: [
+        { emoji: '📺', label: 'Ver tele muy cerca' },
+        { emoji: '🌑', label: 'Leer sin luz' },
+        { emoji: '📱', label: 'Pantallas todo el día' }
+      ]
+    }
+  ],
+  home: [
+    {
+      question: '¿Qué haces antes de irte a dormir?',
+      speech: '¿Qué haces antes de irte a dormir? ¡Elige la rutina saludable!',
+      correct: { emoji: '🪥', label: 'Cepillar mis dientes' },
+      wrong: [
+        { emoji: '📺', label: 'Ver tele hasta tarde' },
+        { emoji: '🍭', label: 'Comer dulces' },
+        { emoji: '📱', label: 'Jugar videojuegos' }
+      ]
+    },
+    {
+      question: '¿Qué fruta o verdura eliges de merienda?',
+      speech: '¿Qué fruta o verdura eliges de merienda? ¡Busca la opción más sana!',
+      correct: { emoji: '🍎', label: 'Comer frutas' },
+      wrong: [
+        { emoji: '🍟', label: 'Papas fritas' },
+        { emoji: '🍩', label: 'Donas con chocolate' },
+        { emoji: '🍕', label: 'Solo pizza' }
+      ]
+    },
+    {
+      question: '¿Cuándo te bañas en tu casa?',
+      speech: '¿Cuándo te bañas en tu casa? ¡Escoge el hábito correcto!',
+      correct: { emoji: '🛁', label: 'Bañarme todos los días' },
+      wrong: [
+        { emoji: '🚫', label: 'No bañarme' },
+        { emoji: '😴', label: 'Solo cuando me piden' },
+        { emoji: '😤', label: 'Bañarme una vez por semana' }
+      ]
+    },
+    {
+      question: '¿A qué hora debes dormirte?',
+      speech: '¿A qué hora debes dormirte? ¡Elige la hora más saludable!',
+      correct: { emoji: '😴', label: 'Dormir temprano' },
+      wrong: [
+        { emoji: '📺', label: 'Ver tele toda la noche' },
+        { emoji: '🌙', label: 'Acostarme muy tarde' },
+        { emoji: '📱', label: 'Jugar hasta muy noche' }
+      ]
+    },
+    {
+      question: '¿Qué pones en tu plato para comer sano?',
+      speech: '¿Qué pones en tu plato para comer sano? ¡Elige el alimento correcto!',
+      correct: { emoji: '🥦', label: 'Verduras y frutas' },
+      wrong: [
+        { emoji: '🍕', label: 'Solo pizza' },
+        { emoji: '🍔', label: 'Solo hamburguesas' },
+        { emoji: '🍬', label: 'Puros dulces' }
+      ]
+    },
+    {
+      question: '¿Qué haces antes de comer en casa?',
+      speech: '¿Qué haces antes de comer en casa? ¡Encuentra el hábito correcto!',
+      correct: { emoji: '🧴', label: 'Lavarme las manos' },
+      wrong: [
+        { emoji: '🍬', label: 'Comer con manos sucias' },
+        { emoji: '📺', label: 'Comer viendo tele' },
+        { emoji: '🚫', label: 'No lavarse nunca' }
+      ]
+    },
+    {
+      question: '¿Cuánta agua debes tomar al día?',
+      speech: '¿Cuánta agua debes tomar al día para estar sano? ¡Elige bien!',
+      correct: { emoji: '💧', label: 'Mucha agua todo el día' },
+      wrong: [
+        { emoji: '🥤', label: 'Solo refrescos' },
+        { emoji: '☕', label: 'Café y más café' },
+        { emoji: '🚫', label: 'Poca o nada' }
+      ]
+    },
+    {
+      question: '¿Qué haces si te cortas jugando en casa?',
+      speech: '¿Qué haces si te cortas jugando en casa? ¡Busca la respuesta correcta!',
+      correct: { emoji: '🩹', label: 'Lavar y pedir ayuda' },
+      wrong: [
+        { emoji: '🏃', label: 'Seguir jugando sin limpiar' },
+        { emoji: '😢', label: 'Esconderlo' },
+        { emoji: '🍭', label: 'Ponerle dulce' }
+      ]
+    }
+  ],
+  park: [
+    {
+      question: '¿Qué debes hacer antes de jugar bajo el sol?',
+      speech: '¿Qué debes hacer antes de jugar bajo el sol? ¡Elige la respuesta correcta!',
+      correct: { emoji: '🧴', label: 'Usar bloqueador solar' },
+      wrong: [
+        { emoji: '🚫', label: 'Nada, no importa' },
+        { emoji: '🍭', label: 'Comer dulces' },
+        { emoji: '😴', label: 'No salir a jugar' }
+      ]
+    },
+    {
+      question: '¿Qué traes para hidratarte en el parque?',
+      speech: '¿Qué traes para hidratarte en el parque? ¡Elige lo más sano!',
+      correct: { emoji: '💧', label: 'Botella de agua' },
+      wrong: [
+        { emoji: '🥤', label: 'Refresco con azúcar' },
+        { emoji: '🍹', label: 'Jugo de caja' },
+        { emoji: '🚫', label: 'No traigo nada' }
+      ]
+    },
+    {
+      question: '¿Qué usas para protegerte del sol en el parque?',
+      speech: '¿Qué usas para protegerte del sol en el parque? ¡Escoge bien!',
+      correct: { emoji: '🧢', label: 'Gorra o sombrero' },
+      wrong: [
+        { emoji: '😎', label: 'Nada, el sol no daña' },
+        { emoji: '📱', label: 'Revisar el celular' },
+        { emoji: '🍕', label: 'Comer más' }
+      ]
+    },
+    {
+      question: '¿Qué haces antes de comer en el parque?',
+      speech: '¿Qué haces antes de comer en el parque? ¡Encuentra el hábito correcto!',
+      correct: { emoji: '🧼', label: 'Limpiarme las manos' },
+      wrong: [
+        { emoji: '🏃', label: 'Comer corriendo' },
+        { emoji: '🐕', label: 'Darle a los perros' },
+        { emoji: '🚫', label: 'No limpiarlas' }
+      ]
+    },
+    {
+      question: '¿Qué haces si ves basura en el parque?',
+      speech: '¿Qué haces si ves basura en el parque? ¡Elige la acción más responsable!',
+      correct: { emoji: '🗑️', label: 'Tirarla en el basurero' },
+      wrong: [
+        { emoji: '🌳', label: 'Tirarla en el pasto' },
+        { emoji: '💨', label: 'Soplarla lejos' },
+        { emoji: '🚫', label: 'Ignorarla' }
+      ]
+    },
+    {
+      question: '¿Qué haces cuando terminas de jugar en el parque?',
+      speech: '¿Qué haces cuando terminas de jugar en el parque? ¡Busca el hábito saludable!',
+      correct: { emoji: '🚿', label: 'Bañarme al llegar' },
+      wrong: [
+        { emoji: '📺', label: 'Ver tele sin bañarme' },
+        { emoji: '😴', label: 'Dormir con ropa sucia' },
+        { emoji: '🍔', label: 'Comer sin lavarme' }
+      ]
+    },
+    {
+      question: '¿Cómo juegas con otros niños en el parque?',
+      speech: '¿Cómo juegas con otros niños en el parque? ¡Elige la forma más sana!',
+      correct: { emoji: '🤝', label: 'Compartir y respetar' },
+      wrong: [
+        { emoji: '😠', label: 'Pelear por el juego' },
+        { emoji: '😤', label: 'No dejar jugar a nadie' },
+        { emoji: '🏃', label: 'Empujar a otros' }
+      ]
+    },
+    {
+      question: '¿Qué ejercicio haces en el parque?',
+      speech: '¿Qué ejercicio haces en el parque para estar sano? ¡Escoge bien!',
+      correct: { emoji: '⚽', label: 'Correr y jugar' },
+      wrong: [
+        { emoji: '📱', label: 'Solo ver el celular' },
+        { emoji: '😴', label: 'Dormir en la banca' },
+        { emoji: '🍩', label: 'Comer en la banca' }
+      ]
+    }
+  ]
+};
 
-    let currentLevel = null;
-    let currentQuestion = 0;
-    let totalCorrect = 0;
-    const TOTAL_QUESTIONS = 6;
+const LEVEL_NAMES = { school:'🏫 La Escuela', home:'🏠 Mi Casa', park:'🌳 El Parque' };
+const LEVEL_IMGS  = {
+  school:'https://images.pexels.com/photos/8535620/pexels-photo-8535620.jpeg?auto=compress&cs=tinysrgb&w=600',
+  home:  'https://images.pexels.com/photos/9305101/pexels-photo-9305101.jpeg?auto=compress&cs=tinysrgb&w=600',
+  park:  'https://images.pexels.com/photos/1046838/pexels-photo-1046838.jpeg?auto=compress&cs=tinysrgb&w=600'
+};
+const TOTAL_QUESTIONS = 8;
 
-    function showScreen(id) {
-      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
-      document.getElementById(id).classList.remove('hidden');
+// ══════════════════════════════════════════
+// GAME STATE
+// ══════════════════════════════════════════
+let currentLevel = null;
+let currentQIndex = 0;
+let totalCorrect = 0;
+let totalAttempts = 0;
+let levelQuestions = [];
+let answerLocked = false;
+let successSpeechText = '';
+let pendingScore = null;
+let currentRankTab = 'school';
+
+// ══════════════════════════════════════════
+// SCREEN NAVIGATION
+// ══════════════════════════════════════════
+function showScreen(id) {
+  document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+  document.getElementById(id).classList.remove('hidden');
+  const backBtn = document.getElementById('back-btn');
+  const noBack = ['screen-welcome','screen-levels'];
+  if (noBack.includes(id)) backBtn.classList.remove('visible');
+  else backBtn.classList.add('visible');
+}
+
+function goBack() {
+  const active = [...document.querySelectorAll('section:not(.hidden)')][0];
+  if (!active) return;
+  playClick();
+  if (active.id === 'screen-challenge') showLevelSelect();
+  else if (active.id === 'screen-success') showLevelSelect();
+  else if (active.id === 'screen-ranking') showLevelSelect();
+  else showScreen('screen-welcome');
+}
+
+function showLevelSelect() {
+  window.speechSynthesis && window.speechSynthesis.cancel();
+  updateLevelStars();
+  showScreen('screen-levels');
+  speak('Elige un lugar. ¿Quieres cuidarte en la escuela, en tu casa, o en el parque?');
+}
+
+function showRanking() {
+  showScreen('screen-ranking');
+  renderRanking(currentRankTab);
+}
+
+// ══════════════════════════════════════════
+// LEVEL STARS ON SELECT SCREEN
+// ══════════════════════════════════════════
+function updateLevelStars() {
+  ['school','home','park'].forEach(lv => {
+    const best = getBestScore(lv);
+    const el = document.getElementById(`stars-${lv}`);
+    if (!el) return;
+    if (!best) { el.textContent = ''; return; }
+    const s = getStarCount(best.correct, best.attempts);
+    el.textContent = '⭐'.repeat(s) + '☆'.repeat(3-s);
+  });
+}
+
+function showBestScore() {
+  const scores = getAllScores();
+  const allBest = Object.values(scores).flat().sort((a,b) => b.points - a.points);
+  if (allBest.length > 0) {
+    document.getElementById('global-best').style.display = 'inline-flex';
+    document.getElementById('best-score-val').textContent = allBest[0].points;
+  }
+}
+
+// ══════════════════════════════════════════
+// GAME FLOW
+// ══════════════════════════════════════════
+function startLevel(level) {
+  currentLevel = level;
+  currentQIndex = 0;
+  totalCorrect = 0;
+  totalAttempts = 0;
+  answerLocked = false;
+  levelQuestions = shuffle([...QUESTIONS[level]]);
+  document.getElementById('challenge-level-label').textContent = LEVEL_NAMES[level];
+  showScreen('screen-challenge');
+  loadQuestion();
+}
+
+function repeatLevel() {
+  startLevel(currentLevel);
+}
+
+function loadQuestion() {
+  answerLocked = false;
+  const q = levelQuestions[currentQIndex];
+  currentQuestion = q;
+
+  // Counter + progress
+  document.getElementById('question-counter').textContent = `${currentQIndex+1} / ${TOTAL_QUESTIONS}`;
+  const pct = (currentQIndex / TOTAL_QUESTIONS) * 100;
+  document.getElementById('progress-fill').style.width = pct + '%';
+
+  // Stars HUD
+  const hud = document.getElementById('score-hud');
+  hud.innerHTML = '';
+  for (let i = 0; i < TOTAL_QUESTIONS; i++) {
+    const chip = document.createElement('span');
+    chip.className = 'star-chip';
+    chip.textContent = i < totalCorrect ? '⭐' : '☆';
+    hud.appendChild(chip);
+  }
+
+  // Speech text
+  document.getElementById('question-speech-text').textContent = q.question;
+
+  // Question text
+  document.getElementById('question-text').textContent = q.question;
+
+  // Feedback clear
+  const fb = document.getElementById('feedback-badge');
+  fb.className = 'hidden';
+  fb.textContent = '';
+
+  // Build cards
+  const grid = document.getElementById('cards-grid');
+  grid.innerHTML = '';
+  const cards = shuffle([
+    { ...q.correct, isCorrect: true },
+    ...q.wrong.map(w => ({ ...w, isCorrect: false }))
+  ]);
+  cards.forEach((c, i) => {
+    const btn = document.createElement('button');
+    btn.className = 'card-btn';
+    btn.id = `card-${i}`;
+    btn.innerHTML = `<span class="card-emoji">${c.emoji}</span><span class="card-label">${c.label}</span>`;
+    btn.style.animationDelay = (i * 0.07) + 's';
+    btn.onclick = () => handleAnswer(btn, c.isCorrect);
+    grid.appendChild(btn);
+  });
+
+  // Auto-speak question after short delay
+  setTimeout(() => speak(q.speech || q.question), 500);
+}
+
+function handleAnswer(btn, isCorrect) {
+  if (answerLocked) return;
+  answerLocked = true;
+  resumeAudio();
+  totalAttempts++;
+
+  const fb = document.getElementById('feedback-badge');
+
+  if (isCorrect) {
+    playCorrect();
+    btn.classList.add('card-correct');
+    btn.disabled = true;
+    totalCorrect++;
+    fb.className = 'feedback-badge feedback-correct';
+    fb.textContent = '✅ ¡Correcto! ¡Muy bien!';
+
+    // Update star HUD
+    const hud = document.getElementById('score-hud');
+    const chips = hud.querySelectorAll('.star-chip');
+    if (chips[totalCorrect - 1]) {
+      chips[totalCorrect - 1].textContent = '⭐';
+      chips[totalCorrect - 1].classList.add('earned');
     }
 
-    function showLevelSelect() { showScreen('screen-levels'); }
+    // Next question or success
+    currentQIndex++;
+    document.getElementById('progress-fill').style.width = (currentQIndex / TOTAL_QUESTIONS * 100) + '%';
 
-    function startLevel(level) {
-      currentLevel = level;
-      currentQuestion = 0;
-      totalCorrect = 0;
-      showScreen('screen-challenge');
-      loadQuestion();
+    if (currentQIndex >= TOTAL_QUESTIONS) {
+      setTimeout(showSuccess, 900);
+    } else {
+      setTimeout(loadQuestion, 800);
     }
+  } else {
+    playWrong();
+    btn.classList.add('card-wrong');
+    btn.disabled = true;
+    fb.className = 'feedback-badge feedback-wrong';
+    fb.textContent = '❌ ¡Intenta de nuevo!';
+    speak('¡Intenta de nuevo! Busca la respuesta correcta.');
+    setTimeout(() => {
+      btn.classList.remove('card-wrong');
+      btn.style.background = '';
+      btn.disabled = false;
+      answerLocked = false;
+    }, 700);
+  }
+}
 
-    function loadQuestion() {
-      const q = questions[currentLevel][currentQuestion];
-      const grid = document.getElementById('cards-grid');
-      grid.innerHTML = '';
-      document.getElementById('question-text').textContent = `Pregunta ${currentQuestion + 1} de ${TOTAL_QUESTIONS}`;
-      updateProgress();
+// ══════════════════════════════════════════
+// SUCCESS SCREEN
+// ══════════════════════════════════════════
+function showSuccess() {
+  const accuracy = Math.round((totalCorrect / totalAttempts) * 100) || 0;
+  const stars = getStarCount(totalCorrect, totalAttempts);
+  const points = calcPoints(totalCorrect, totalAttempts);
+  const prevBest = getBestScore(currentLevel);
+  const isNew = !prevBest || points > prevBest.points;
 
-      const cards = [
-        { emoji: q.correct[0], label: q.correct[1], isCorrect: true },
-        ...q.wrong.map(w => ({ emoji: w[0], label: w[1], isCorrect: false }))
-      ].sort(() => Math.random() - 0.5);
+  // Store pending score
+  pendingScore = { level: currentLevel, correct: totalCorrect, attempts: totalAttempts, points, stars, accuracy };
 
-      cards.forEach(c => {
-        const btn = document.createElement('button');
-        btn.className = 'bg-white rounded-2xl p-4 shadow-md flex flex-col items-center gap-2 transition-all duration-300';
-        btn.innerHTML = `<span class="text-4xl">${c.emoji}</span><span class="font-bold text-sm text-gray-700">${c.label}</span>`;
-        btn.onclick = () => handleCardTap(btn, c.isCorrect);
-        grid.appendChild(btn);
-      });
+  // Stars display
+  ['star1','star2','star3'].forEach((id, i) => {
+    const el = document.getElementById(id);
+    if (i < stars) {
+      el.classList.add('lit');
+      el.style.animationDelay = (i * 0.25 + 0.3) + 's';
+    } else {
+      el.classList.remove('lit');
     }
+  });
 
-    function handleCardTap(btn, isCorrect) {
-      if (btn.disabled) return;
-      if (audioCtx.state === 'suspended') audioCtx.resume();
+  // Title & subtitle
+  let title = '¡Lo lograste!';
+  let sub = '';
+  if (stars === 3)      { title = '🌟 ¡Perfecto!';     sub = '¡Sin errores! ¡Eres un campeón de la salud!'; }
+  else if (stars === 2) { title = '🎉 ¡Muy bien!';     sub = '¡Casi perfecto! ¡Sigue practicando!'; }
+  else                  { title = '👍 ¡Buen intento!'; sub = '¡Puedes mejorar! ¡Inténtalo de nuevo!'; }
 
-      if (isCorrect) {
-        playCorrect();
-        btn.classList.add('correct-glow');
-        btn.disabled = true;
-        totalCorrect++;
-        currentQuestion++;
-        updateProgress();
-        if (currentQuestion >= TOTAL_QUESTIONS) {
-          setTimeout(() => showScreen('screen-success'), 900);
-        } else {
-          setTimeout(loadQuestion, 900);
-        }
-      } else {
-        playWrong();
-        btn.classList.add('shake');
-        btn.style.background = '#fee2e2';
-        btn.disabled = true;
-        setTimeout(() => { btn.classList.remove('shake'); btn.style.background = ''; btn.disabled = false; }, 600);
-      }
-    }
+  document.getElementById('success-title').textContent = title;
+  document.getElementById('success-sub').textContent = sub;
+  document.getElementById('res-correct').textContent = `${totalCorrect} / ${TOTAL_QUESTIONS}`;
+  document.getElementById('res-accuracy').textContent = `${accuracy}%`;
+  document.getElementById('res-points').textContent = points;
+  document.getElementById('res-best').textContent = prevBest ? prevBest.points : '---';
 
-    function updateProgress() {
-      document.getElementById('progress-text').textContent = '⭐'.repeat(totalCorrect) + '☆'.repeat(TOTAL_QUESTIONS - totalCorrect);
-    }
+  if (isNew) document.getElementById('new-record-badge').classList.remove('hidden');
+  else       document.getElementById('new-record-badge').classList.add('hidden');
 
-    function resetGame() {
-      currentLevel = null;
-      currentQuestion = 0;
-      totalCorrect = 0;
-      showScreen('screen-welcome');
-    }
-  </script>
- <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0daddd0c434b20e',t:'MTc4MTc5MTcxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+  // Speech text
+  successSpeechText = `¡Felicidades! Conseguiste ${totalCorrect} de ${TOTAL_QUESTIONS} respuestas correctas. ${sub}`;
+  document.getElementById('success-speech-text').textContent = successSpeechText;
+
+  showScreen('screen-success');
+  playVictory();
+  spawnConfetti(stars * 15 + 10);
+  setTimeout(() => speak(successSpeechText), 600);
+}
+
+function getStarCount(correct, attempts) {
+  const acc = attempts > 0 ? correct / attempts : 0;
+  if (correct >= TOTAL_QUESTIONS && acc >= 0.85) return 3;
+  if (correct >= Math.floor(TOTAL_QUESTIONS * 0.75)) return 2;
+  return 1;
+}
+
+function calcPoints(correct, attempts) {
+  const accuracy = attempts > 0 ? correct / attempts : 0;
+  return Math.round(correct * 100 + accuracy * 50);
+}
+
+// ══════════════════════════════════════════
+// CONFETTI
+// ══════════════════════════════════════════
+function spawnConfetti(count) {
+  const colors = ['#fbbf24','#34d399','#60a5fa','#f472b6','#a78bfa','#fb923c'];
+  for (let i = 0; i < count; i++) {
+    const el = document.createElement('div');
+    el.className = 'confetti-piece';
+    el.style.cssText = `
+      left: ${Math.random()*100}vw;
+      background: ${colors[Math.floor(Math.random()*colors.length)]};
+      width: ${Math.random()*10+6}px;
+      height: ${Math.random()*14+8}px;
+      animation-duration: ${Math.random()*2+2}s;
+      animation-delay: ${Math.random()*1.5}s;
+      border-radius: ${Math.random() > 0.5 ? '50%' : '3px'};
+    `;
+    document.body.appendChild(el);
+    el.addEventListener('animationend', () => el.remove());
+  }
+}
+
+// ══════════════════════════════════════════
+// SAVE / RANKING
+// ══════════════════════════════════════════
+const STORAGE_KEY = 'cuido_mi_salud_scores_v2';
+
+function getAllScores() {
+  try { return JSON.parse(localStorage.getItem(STORAGE_KEY)) || { school:[], home:[], park:[] }; }
+  catch { return { school:[], home:[], park:[] }; }
+}
+
+function saveAllScores(data) {
+  localStorage.setItem(STORAGE_KEY, JSON.stringify(data));
+}
+
+function getBestScore(level) {
+  const all = getAllScores();
+  const lvl = all[level] || [];
+  return lvl.sort((a,b) => b.points - a.points)[0] || null;
+}
+
+function askNameAndSave() {
+  if (!pendingScore) return;
+  const modal = document.getElementById('name-modal');
+  modal.classList.remove('hidden');
+  document.getElementById('player-name-input').value = localStorage.getItem('cms_player_name') || '';
+  document.getElementById('player-name-input').focus();
+}
+
+function closeModal() {
+  document.getElementById('name-modal').classList.add('hidden');
+}
+
+function confirmSave() {
+  const name = document.getElementById('player-name-input').value.trim() || 'Anónimo';
+  localStorage.setItem('cms_player_name', name);
+  if (!pendingScore) { closeModal(); return; }
+  const all = getAllScores();
+  const lvl = all[pendingScore.level] || [];
+  lvl.push({
+    name,
+    points:   pendingScore.points,
+    correct:  pendingScore.correct,
+    attempts: pendingScore.attempts,
+    stars:    pendingScore.stars,
+    accuracy: pendingScore.accuracy,
+    date:     new Date().toLocaleDateString('es-MX', { day:'2-digit', month:'short' })
+  });
+  // Keep top 10
+  lvl.sort((a,b) => b.points - a.points);
+  all[pendingScore.level] = lvl.slice(0, 10);
+  saveAllScores(all);
+  pendingScore = null;
+  closeModal();
+  showBestScore();
+  showRanking();
+  switchRankTab(currentLevel || 'school');
+  playCorrect();
+}
+
+// ══════════════════════════════════════════
+// RANKING RENDER
+// ══════════════════════════════════════════
+function switchRankTab(level) {
+  currentRankTab = level;
+  document.querySelectorAll('.rank-tab').forEach(t => t.classList.remove('active'));
+  document.getElementById(`tab-${level}`).classList.add('active');
+  renderRanking(level);
+}
+
+function renderRanking(level) {
+  const all = getAllScores();
+  const list = (all[level] || []).sort((a,b) => b.points - a.points);
+  const ul = document.getElementById('rank-list');
+  ul.innerHTML = '';
+  if (list.length === 0) {
+    ul.innerHTML = '<li class="rank-empty">🌟 ¡Sé el primero en el ranking!<br>Juega y guarda tu puntaje.</li>';
+    return;
+  }
+  const medals = ['🥇','🥈','🥉'];
+  const posClass = ['gold','silver','bronze'];
+  list.forEach((item, i) => {
+    const li = document.createElement('li');
+    li.className = 'rank-item';
+    li.style.animationDelay = (i * 0.06) + 's';
+    const pos = i < 3 ? `<span class="rank-pos ${posClass[i]}">${medals[i]}</span>`
+                      : `<span class="rank-pos">#${i+1}</span>`;
+    li.innerHTML = `
+      ${pos}
+      <div class="rank-info">
+        <div class="rank-name">${escapeHtml(item.name)}</div>
+        <div class="rank-date">${item.date} · ${item.correct}/${TOTAL_QUESTIONS} correctas</div>
+      </div>
+      <div class="rank-score">
+        <span>${item.points} pts</span>
+        <span class="rank-stars">${'⭐'.repeat(item.stars || 1)}</span>
+      </div>
+    `;
+    ul.appendChild(li);
+  });
+}
+
+function escapeHtml(str) {
+  return str.replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;');
+}
+
+// ══════════════════════════════════════════
+// UTILITIES
+// ══════════════════════════════════════════
+function shuffle(arr) {
+  for (let i = arr.length - 1; i > 0; i--) {
+    const j = Math.floor(Math.random() * (i+1));
+    [arr[i], arr[j]] = [arr[j], arr[i]];
+  }
+  return arr;
+}
+
+// ══════════════════════════════════════════
+// INIT
+// ══════════════════════════════════════════
+window.addEventListener('load', () => {
+  updateTTSBadge();
+  showBestScore();
+  // Warm up voices
+  if ('speechSynthesis' in window) {
+    const dummy = new SpeechSynthesisUtterance('');
+    window.speechSynthesis.speak(dummy);
+    window.speechSynthesis.cancel();
+  }
+});
+</script>
+</body>
 </html>
