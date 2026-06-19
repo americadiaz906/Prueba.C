@@ -1,0 +1,182 @@
+<!doctype html>
+<html lang="es">
+ <head><script src="/_sdk/telemetry_sdk.js"></script>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Cuido Mi Salud</title>
+  <script src="https://cdn.tailwindcss.com/3.4.17"></script>
+  <link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;700;900&amp;display=swap" rel="stylesheet">
+  <style>
+    body { font-family: 'DM Sans', sans-serif; }
+    .shake { animation: shake 0.4s ease-in-out; }
+    @keyframes shake { 0%,100%{transform:translateX(0)} 25%{transform:translateX(-8px)} 75%{transform:translateX(8px)} }
+    .correct-glow { box-shadow: 0 0 0 6px #22c55e; transform: scale(1.05); }
+    .fade-in { animation: fadeIn 0.5s ease-out; }
+    @keyframes fadeIn { from{opacity:0;transform:scale(0.9)} to{opacity:1;transform:scale(1)} }
+    .bounce { animation: bounce 0.6s ease infinite alternate; }
+    @keyframes bounce { from{transform:translateY(0)} to{transform:translateY(-10px)} }
+  </style>
+  <script src="https://cdn.jsdelivr.net/npm/lucide@0.263.0/dist/umd/lucide.min.js" type="text/javascript"></script>
+  <script src="/_sdk/data_sdk.js" type="text/javascript"></script>
+  <script src="/_sdk/resizing_sdk.js" type="text/javascript"></script>
+ </head>
+ <body data-template-id="__page-root" class="min-h-screen flex items-center justify-center p-4"><!-- WELCOME -->
+  <section id="screen-welcome" class="text-center max-w-md w-full fade-in">
+   <div class="mb-6">
+    <span class="text-6xl bounce inline-block">🌟</span>
+   </div>
+   <h1 data-template-id="game-title" class="canva-text text-4xl mb-3"></h1>
+   <p data-template-id="game-subtitle" class="canva-text text-lg mb-8"></p>
+   <div data-template-id="audio-welcome" class="canva-text bg-white/80 rounded-xl p-4 mb-6 text-sm italic"></div><button data-template-id="btn-play" class="canva-button text-2xl px-10 py-4 rounded-full shadow-lg hover:scale-105 transition-transform" onclick="playClick();showLevelSelect()"></button>
+  </section><!-- LEVEL SELECT -->
+  <section id="screen-levels" class="text-center max-w-lg w-full hidden">
+   <h2 data-template-id="levels-title" class="canva-text text-2xl mb-6"></h2>
+   <div data-template-id="audio-levels" class="canva-text bg-white/80 rounded-xl p-3 mb-6 text-sm italic"></div>
+   <div class="grid grid-cols-2 gap-4"><button onclick="playClick();startLevel('school')" class="rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition-transform"> <img data-template-id="img-school" class="canva-image w-full h-32 object-cover" loading="lazy"> <span data-template-id="label-school" class="canva-text block py-3 font-bold text-lg"></span> </button> <button onclick="playClick();startLevel('home')" class="rounded-2xl overflow-hidden shadow-lg hover:scale-105 transition-transform"> <img data-template-id="img-home" class="canva-image w-full h-32 object-cover" loading="lazy"> <span data-template-id="label-home" class="canva-text block py-3 font-bold text-lg"></span> </button>
+   </div>
+  </section><!-- CHALLENGE -->
+  <section id="screen-challenge" class="text-center max-w-lg w-full hidden">
+   <h2 data-template-id="challenge-title" class="canva-text text-xl mb-2"></h2>
+   <div data-template-id="audio-challenge" class="canva-text bg-white/80 rounded-xl p-3 mb-4 text-sm italic"></div>
+   <p id="question-text" class="text-white font-bold text-lg mb-3"></p>
+   <div id="cards-grid" class="grid grid-cols-2 gap-4"></div>
+   <p id="progress-text" class="mt-4 text-white/80 font-medium"></p>
+  </section><!-- SUCCESS -->
+  <section id="screen-success" class="text-center max-w-md w-full hidden">
+   <div class="fade-in"><span class="text-6xl bounce inline-block mb-4">🎉</span> <img data-template-id="img-success" class="canva-image w-full h-48 object-cover rounded-2xl mb-4" loading="lazy">
+    <h2 data-template-id="success-title" class="canva-text text-3xl mb-2"></h2>
+    <p data-template-id="success-message" class="canva-text text-lg mb-6"></p>
+    <div data-template-id="audio-success" class="canva-text bg-white/80 rounded-xl p-3 mb-6 text-sm italic"></div><button data-template-id="btn-replay" class="canva-button text-xl px-8 py-3 rounded-full shadow-lg hover:scale-105 transition-transform" onclick="playClick();resetGame()"></button>
+   </div>
+  </section>
+  <script src="/_sdk/editing_sdk.js"></script>
+  <script>
+    // Web Audio API sounds
+    const audioCtx = new (window.AudioContext || window.webkitAudioContext)();
+
+    function playTone(freq, duration, type, vol) {
+      const o = audioCtx.createOscillator();
+      const g = audioCtx.createGain();
+      o.type = type;
+      o.frequency.setValueAtTime(freq, audioCtx.currentTime);
+      g.gain.setValueAtTime(vol, audioCtx.currentTime);
+      g.gain.exponentialRampToValueAtTime(0.01, audioCtx.currentTime + duration);
+      o.connect(g); g.connect(audioCtx.destination);
+      o.start(); o.stop(audioCtx.currentTime + duration);
+    }
+
+    function playCorrect() {
+      playTone(523, 0.15, 'sine', 0.4);
+      setTimeout(() => playTone(659, 0.15, 'sine', 0.4), 100);
+      setTimeout(() => playTone(784, 0.25, 'sine', 0.4), 200);
+    }
+
+    function playWrong() {
+      playTone(200, 0.3, 'square', 0.2);
+      setTimeout(() => playTone(150, 0.3, 'square', 0.2), 150);
+    }
+
+    function playClick() {
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+      playTone(880, 0.08, 'sine', 0.2);
+    }
+
+    // Game data - 6 questions per level
+    const questions = {
+      school: [
+        { correct: ['🧼', 'Lavarme las manos'], wrong: [['🏃', 'Correr en el pasillo'], ['😴', 'Dormirme en clase'], ['🍭', 'Comer dulces']] },
+        { correct: ['💧', 'Tomar agua'], wrong: [['🥤', 'Tomar refresco'], ['🚫', 'No desayunar'], ['📱', 'Usar celular']] },
+        { correct: ['🥗', 'Comer mi lunch sano'], wrong: [['🍟', 'Comer chatarra'], ['🏃', 'Empujar amigos'], ['😤', 'Gritar']] },
+        { correct: ['🤧', 'Taparme al estornudar'], wrong: [['👃', 'Tocarme la cara'], ['🚰', 'Desperdiciar agua'], ['📺', 'Ver tele todo el día']] },
+        { correct: ['🏃‍♂️', 'Hacer ejercicio en recreo'], wrong: [['🍩', 'Comer donas'], ['😠', 'Pelear'], ['🚫', 'No lavarme']] },
+        { correct: ['😊', 'Compartir con amigos'], wrong: [['😤', 'Enojarme mucho'], ['🍬', 'Comer muchos dulces'], ['📺', 'No salir a jugar']] }
+      ],
+      home: [
+        { correct: ['🪥', 'Cepillar mis dientes'], wrong: [['📺', 'Desvelarme'], ['🍭', 'Comer dulces'], ['😤', 'No bañarme']] },
+        { correct: ['🍎', 'Comer frutas'], wrong: [['🍟', 'Comer chatarra'], ['📱', 'Usar tablet todo el día'], ['😴', 'No dormir']] },
+        { correct: ['🛁', 'Bañarme diario'], wrong: [['🚫', 'No lavarme las manos'], ['🍩', 'Cenar dulces'], ['😠', 'Gritar']] },
+        { correct: ['😴', 'Dormir temprano'], wrong: [['📺', 'Ver tele toda la noche'], ['🍭', 'Comer antes de dormir'], ['📱', 'Jugar videojuegos']] },
+        { correct: ['🥦', 'Comer verduras'], wrong: [['🍕', 'Solo comer pizza'], ['🚫', 'No desayunar'], ['😤', 'Enojarme']] },
+        { correct: ['🧴', 'Lavarme las manos antes de comer'], wrong: [['🍬', 'Comer con manos sucias'], ['📺', 'Comer viendo tele'], ['🚰', 'No tomar agua']] }
+      ]
+    };
+
+    let currentLevel = null;
+    let currentQuestion = 0;
+    let totalCorrect = 0;
+    const TOTAL_QUESTIONS = 6;
+
+    function showScreen(id) {
+      document.querySelectorAll('section').forEach(s => s.classList.add('hidden'));
+      document.getElementById(id).classList.remove('hidden');
+    }
+
+    function showLevelSelect() { showScreen('screen-levels'); }
+
+    function startLevel(level) {
+      currentLevel = level;
+      currentQuestion = 0;
+      totalCorrect = 0;
+      showScreen('screen-challenge');
+      loadQuestion();
+    }
+
+    function loadQuestion() {
+      const q = questions[currentLevel][currentQuestion];
+      const grid = document.getElementById('cards-grid');
+      grid.innerHTML = '';
+      document.getElementById('question-text').textContent = `Pregunta ${currentQuestion + 1} de ${TOTAL_QUESTIONS}`;
+      updateProgress();
+
+      const cards = [
+        { emoji: q.correct[0], label: q.correct[1], isCorrect: true },
+        ...q.wrong.map(w => ({ emoji: w[0], label: w[1], isCorrect: false }))
+      ].sort(() => Math.random() - 0.5);
+
+      cards.forEach(c => {
+        const btn = document.createElement('button');
+        btn.className = 'bg-white rounded-2xl p-4 shadow-md flex flex-col items-center gap-2 transition-all duration-300';
+        btn.innerHTML = `<span class="text-4xl">${c.emoji}</span><span class="font-bold text-sm text-gray-700">${c.label}</span>`;
+        btn.onclick = () => handleCardTap(btn, c.isCorrect);
+        grid.appendChild(btn);
+      });
+    }
+
+    function handleCardTap(btn, isCorrect) {
+      if (btn.disabled) return;
+      if (audioCtx.state === 'suspended') audioCtx.resume();
+
+      if (isCorrect) {
+        playCorrect();
+        btn.classList.add('correct-glow');
+        btn.disabled = true;
+        totalCorrect++;
+        currentQuestion++;
+        updateProgress();
+        if (currentQuestion >= TOTAL_QUESTIONS) {
+          setTimeout(() => showScreen('screen-success'), 900);
+        } else {
+          setTimeout(loadQuestion, 900);
+        }
+      } else {
+        playWrong();
+        btn.classList.add('shake');
+        btn.style.background = '#fee2e2';
+        btn.disabled = true;
+        setTimeout(() => { btn.classList.remove('shake'); btn.style.background = ''; btn.disabled = false; }, 600);
+      }
+    }
+
+    function updateProgress() {
+      document.getElementById('progress-text').textContent = '⭐'.repeat(totalCorrect) + '☆'.repeat(TOTAL_QUESTIONS - totalCorrect);
+    }
+
+    function resetGame() {
+      currentLevel = null;
+      currentQuestion = 0;
+      totalCorrect = 0;
+      showScreen('screen-welcome');
+    }
+  </script>
+ <script>(function(){function c(){var b=a.contentDocument||a.contentWindow.document;if(b){var d=b.createElement('script');d.innerHTML="window.__CF$cv$params={r:'a0daddd0c434b20e',t:'MTc4MTc5MTcxMS4wMDAwMDA='};var a=document.createElement('script');a.nonce='';a.src='/cdn-cgi/challenge-platform/scripts/jsd/main.js';document.getElementsByTagName('head')[0].appendChild(a);";b.getElementsByTagName('head')[0].appendChild(d)}}if(document.body){var a=document.createElement('iframe');a.height=1;a.width=1;a.style.position='absolute';a.style.top=0;a.style.left=0;a.style.border='none';a.style.visibility='hidden';document.body.appendChild(a);if('loading'!==document.readyState)c();else if(window.addEventListener)document.addEventListener('DOMContentLoaded',c);else{var e=document.onreadystatechange||function(){};document.onreadystatechange=function(b){e(b);'loading'!==document.readyState&&(document.onreadystatechange=e,c())}}}})();</script></body>
+</html>
