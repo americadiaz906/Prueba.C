@@ -400,8 +400,8 @@
     /* CARDS GRID */
     .cards-grid {
       display: grid;
-      grid-template-columns: repeat(2, 1fr);
-      gap: 12px;
+      grid-template-columns: repeat(auto-fit, minmax(130px, 1fr));
+      gap: 16px;
       margin-bottom: 12px;
     }
     .card-btn {
@@ -414,7 +414,7 @@
       flex-direction: column;
       align-items: center;
       gap: 10px;
-      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s;
+      transition: transform 0.2s, box-shadow 0.2s, border-color 0.2s, opacity 0.5s;
       box-shadow: 0 6px 20px rgba(0,0,0,0.2);
       font-family: 'Nunito', sans-serif;
     }
@@ -424,9 +424,9 @@
       border-color: var(--purple-light);
     }
     .card-btn:disabled { cursor: not-allowed; }
-    .card-emoji { font-size: 42px; line-height: 1; }
+    .card-emoji { font-size: 72px; line-height: 1.1; }
     .card-label {
-      font-size: 13px;
+      font-size: 15px;
       font-weight: 800;
       color: #374151;
       text-align: center;
@@ -438,9 +438,9 @@
       animation: correctPop 0.5s ease-out;
     }
     .card-wrong {
-      border-color: var(--red) !important;
-      background: #fef2f2 !important;
-      animation: shake 0.5s ease-in-out;
+      opacity: 0 !important;
+      pointer-events: none;
+      transform: scale(0.9);
     }
 
     /* FEEDBACK BADGE */
@@ -454,7 +454,7 @@
       animation: fadeInUp 0.3s ease-out;
     }
     .feedback-correct { background: rgba(34,197,94,0.25); color: #4ade80; border: 2px solid rgba(34,197,94,0.4); }
-    .feedback-wrong   { background: rgba(239,68,68,0.25);  color: #f87171; border: 2px solid rgba(239,68,68,0.4); }
+    .feedback-wrong   { background: rgba(255,255,255,0.2);  color: #ffffff; border: 2px solid rgba(255,255,255,0.4); }
 
     /* ─── SCREEN: SUCCESS ─── */
     #screen-success {
@@ -830,7 +830,7 @@
     <div class="score-detail">
       <div class="score-row">
         <span>✅ Correctas</span>
-        <span class="score-val" id="res-correct">0 / 8</span>
+        <span class="score-val" id="res-correct">0 / 4</span>
       </div>
       <div class="score-row">
         <span>⚡ Precisión</span>
@@ -947,8 +947,8 @@ function playCorrect() {
 }
 function playWrong() {
   resumeAudio();
-  playTone(220, 0.2, 'sawtooth', 0.2, 0);
-  playTone(180, 0.3, 'sawtooth', 0.15, 0.15);
+  playTone(300, 0.15, 'sine', 0.2, 0);
+  playTone(250, 0.2, 'sine', 0.2, 0.1);
 }
 function playClick() {
   resumeAudio();
@@ -1268,7 +1268,7 @@ const LEVEL_IMGS  = {
   home:  'https://images.pexels.com/photos/9305101/pexels-photo-9305101.jpeg?auto=compress&cs=tinysrgb&w=600',
   park:  'https://images.pexels.com/photos/1046838/pexels-photo-1046838.jpeg?auto=compress&cs=tinysrgb&w=600'
 };
-const TOTAL_QUESTIONS = 8;
+const TOTAL_QUESTIONS = 4;
 
 // ══════════════════════════════════════════
 // GAME STATE
@@ -1395,7 +1395,7 @@ function loadQuestion() {
   grid.innerHTML = '';
   const cards = shuffle([
     { ...q.correct, isCorrect: true },
-    ...q.wrong.map(w => ({ ...w, isCorrect: false }))
+    ...shuffle([...q.wrong]).slice(0, 2).map(w => ({ ...w, isCorrect: false }))
   ]);
   cards.forEach((c, i) => {
     const btn = document.createElement('button');
@@ -1449,14 +1449,11 @@ function handleAnswer(btn, isCorrect) {
     btn.classList.add('card-wrong');
     btn.disabled = true;
     fb.className = 'feedback-badge feedback-wrong';
-    fb.textContent = '❌ ¡Intenta de nuevo!';
-    speak('¡Intenta de nuevo! Busca la respuesta correcta.');
+    fb.textContent = '💡 ¡Ups, intenta de nuevo!';
+    speak('¡Ups, intenta de nuevo!');
     setTimeout(() => {
-      btn.classList.remove('card-wrong');
-      btn.style.background = '';
-      btn.disabled = false;
       answerLocked = false;
-    }, 700);
+    }, 500);
   }
 }
 
